@@ -1,0 +1,50 @@
+spring:
+  cloud:
+    discovery:
+      enabled: true   # true：启用了服务注册和发现功能
+    nacos:
+      discovery:
+        server-addr: 192.168.64.130:8848
+      config:
+        server-addr: 192.168.64.130:8848
+    loadbalancer:
+      ribbon:
+        enabled: false # 禁用 Ribbon 客户端
+      reactive:
+        enabled: true # 开启响应式的 LoadBalancer
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 启用探测器，让gateway可以发现nacos中的微服务
+          lower-case-service-id: true
+      routes:
+        # qs-analysis
+        - id: qs-analysis-route
+          uri: lb://qs-analysis-server
+          predicates:
+            - Path=/api/analysis/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+        #  总请求应该在最下面
+        #  http://localhost:8808/api/qs/list -> http://localhost:8801/qs/list
+        - id: qs-route        # id 是一个唯一的标识符，用于区分不同的路由规则
+          uri: lb://qs-server # lb://qs-server ,lb 表示负载均衡器，qs-server是具体的服务名称 ; 也可以用http://127.0.0.1:8801
+          predicates:
+            - Path=/api/qs/** # 只有满足 /api/qs开头的请求路径才会被路由到该服务中
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment} # 去掉/api
+
+# 打印gateway的日志
+#logging:
+#  level:
+#    org.springframework.cloud.gateway: debug
+
+# Ribbon 配置
+ribbon:
+  ConnectTimeout: 3000 # 连接超时时间，单位为毫秒
+  ReadTimeout: 5000 # 读取超时时间，单位为毫秒
+  MaxTotalConnections: 1000 # 最大连接数
+  MaxConnectionsPerHost: 500 # 每个目标主机的最大连接数
+  ServerListRefreshInterval: 30000 # 服务器列表刷新间隔，单位为毫秒
+  EnablePrimeConnections: true # 是否启用 Prime Connections
+  NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule # 负载均衡规则，默认为 ZoneAvoidanceRule

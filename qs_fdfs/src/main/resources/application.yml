@@ -1,0 +1,31 @@
+server:
+  port: 8803
+
+visit:
+  host: http://192.168.64.130:8899/
+
+spring:
+  application:
+    name: qs-fdfs-server
+  jmx:
+    enabled: false
+  servlet:
+    multipart:
+      max-file-size: 1000MB # 文件大小限制
+      max-request-size: 1000MB
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://192.168.64.130:3306/qs_fastdfs
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+fdfs:
+  tracker-list: 192.168.64.130:22122
+  connect-timeout: 1500
+  so-timeout: 1500
+  thumb-image:
+    height: 150
+    width: 150
+  pool:
+    max-total: 200
+

@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.64.130:8848
+      config:
+        server-addr: 192.168.64.130:8848
+    loadbalancer:
+      ribbon:
+        enabled: false # 关闭ribbon
+feign:
+  client:
+    config:
+      default:
+        enable-loadbalancer: true
+        connectTimeout: 5000 # 连接超时时间
+        readTimeout: 5000    # 数据读取超时是时间
+
