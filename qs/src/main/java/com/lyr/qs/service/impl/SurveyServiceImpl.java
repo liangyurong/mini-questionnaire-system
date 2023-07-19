@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -36,14 +37,17 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
 
     @Override
     public Page<Survey> page(SurveyDto dto) {
+        // 如果查询参数为空，则使用默认分页查询条件
         if (dto == null) {
             return page(new Page<>(Constant.SURVEY_QUERY_CURRENT, Constant.SURVEY_QUERY_SIZE), null);
         }
+        // 获取当前页码，若未指定则使用默认值
         int current = Optional.ofNullable(dto.getCurrent()).orElse(Constant.SURVEY_QUERY_CURRENT);
+        // 获取每页显示数量，若未指定或超过最大限制则使用默认值
         int size = Optional.ofNullable(dto.getSize()).filter(s -> s <= Constant.SURVEY_QUERY_SIZE).orElse(Constant.SURVEY_QUERY_SIZE);
-        LambdaQueryWrapper<Survey> wrapper = new LambdaQueryWrapper<>();
-        // 问卷可见、按照创建时间降序排序、匹配Description、匹配SurveyState
-        wrapper.eq(Survey::getVisibility, Constant.SURVEY_VISIBILITY_ABLE)
+        // 设置查询条件：问卷可见、按照创建时间降序排序、匹配Title、匹配Description、匹配SurveyState
+        LambdaQueryWrapper<Survey> wrapper = new LambdaQueryWrapper<Survey>()
+                .eq(Survey::getVisibility, Constant.SURVEY_VISIBILITY_ABLE)
                 .orderByDesc(Survey::getCreateTime)
                 .like(!StringUtils.isEmpty(dto.getTitle()), Survey::getTitle, dto.getTitle())
                 .like(!StringUtils.isEmpty(dto.getDescription()), Survey::getDescription, dto.getDescription())
