@@ -26,7 +26,6 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
         <alibaba.druid>1.1.9</alibaba.druid>
         <common.lang3>3.8</common.lang3>
         <cglib.version>3.3.0</cglib.version>
@@ -46,7 +45,7 @@
         <swagger.version>3.0.0</swagger.version>
         <spring.oauth2.version>2.2.1.RELEASE</spring.oauth2.version>
         <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
-        <sentinel.version>1.8.0</sentinel.version>
+        <sentinel.version>2021.1</sentinel.version>
         <spring-cloud.version>Hoxton.SR9</spring-cloud.version>
         <spring-test.version>2.3.9.RELEASE</spring-test.version>
         <spring.mybatis>1.3.2</spring.mybatis>
@@ -156,10 +155,9 @@
                 <version>${fastjson.version}</version>
             </dependency>
 
-
             <dependency>
-                <groupId>com.alibaba.csp</groupId>
-                <artifactId>sentinel-core</artifactId>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
                 <version>${sentinel.version}</version>
             </dependency>
 

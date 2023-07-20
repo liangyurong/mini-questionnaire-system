@@ -1,6 +1,5 @@
 package com.lyr.qs.controller;
 
-import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
 import com.lyr.qscommon.dto.UserDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/qs")
 @Slf4j
-public class QsController {
+public class TestQsController {
 
     @Resource
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -42,11 +41,5 @@ public class QsController {
         kafkaTemplate.send("qs-analysis-topic",jsonObject.toJSONString());
     }
 
-    // 测试sentinel
-    @SentinelResource(blockHandler = "hello")
-    @GetMapping("/sentinel")
-    public String sentinel(@RequestParam("id") Integer id){
-        return "根据问卷id="+id+"获取到了问卷";
-    }
 
 }

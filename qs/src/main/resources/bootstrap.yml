@@ -12,3 +12,6 @@ spring:
         # file-extension: yaml # 找到dev命名空间下，DEV_GROUP组的qs-server-dev.yaml
         # namespace: e54a1d37-e251-47ad-ae2e-c75d664e5e37 # 对应dev命名空间
         # group: DEV_GROUP  # 组
+    sentinel:
+      transport:
+        dashboard: localhost:8090 # sentinel控制台地址
