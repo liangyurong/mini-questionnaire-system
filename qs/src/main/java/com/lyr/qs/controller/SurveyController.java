@@ -30,8 +30,8 @@ public class SurveyController {
     @ApiOperation("根据问卷id获取一份问卷数据")
     @GetMapping("/getSurveyById")
     public ResponseResult getSurveyById(@RequestParam("id") Integer id) {
-        JSONObject json = surveyService.getQuestionnaireById(id);
-        return new ResponseResult(HttpStatus.OK.value(), "获取问卷列表成功", json);
+        Survey survey = surveyService.getSurveyDataById(id);
+        return new ResponseResult(HttpStatus.OK.value(), "获取问卷列表成功", survey);
     }
 
     @ApiOperation("创建一张问卷")

@@ -8,9 +8,7 @@ import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
 
 /**
- * <p>
- * 问卷表 服务类
- * </p>
+ * 问卷表
  *
  * @author yurong333
  * @since 2022-12-30
@@ -44,7 +42,7 @@ public interface SurveyService extends IService<Survey> {
      * @param id 问卷id
      * @return
      */
-    JSONObject getQuestionnaireById(Integer id);
+    Survey getSurveyDataById(Integer id);
 
     /**
      * 根据问卷id获取问卷,并且该问卷具有可见性，因此不能使用MyBatisPlus自带的getById()方法

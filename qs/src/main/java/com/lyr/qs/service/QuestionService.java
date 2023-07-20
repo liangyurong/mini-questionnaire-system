@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lyr.qs.entity.Question;
 import com.lyr.qs.exception.CustomException;
 
+import java.util.List;
+
 /**
- * <p>
- * 问题表 服务类
- * </p>
+ * 问题表
  *
  * @author yurong333
  * @since 2022-12-30
@@ -71,9 +71,16 @@ public interface QuestionService extends IService<Question> {
     void removeQuestionById(Integer id);
 
     /**
-     * 根据问卷id获取所有问题(选择题包含选项)
+     * 根据问卷id获取所有问题
      * @param surveyId 问卷id
-     * @return
+     * @return 所有问题
      */
-    JSONArray getQuestionsBySurveyId(Integer surveyId);
+    List<Question> getQuestionsBySurveyId(Integer surveyId);
+
+    /**
+     * 根据问卷id获取所有问题和问题的所有选项（仅限选择题）
+     * @param surveyId 问卷id
+     * @return 所有问题和问题的所有选项（仅限选择题）
+     */
+    List<Question> getQuestionsAndOptionsBySurveyId(Integer surveyId);
 }

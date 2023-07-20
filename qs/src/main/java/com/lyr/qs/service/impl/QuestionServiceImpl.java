@@ -16,12 +16,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <p>
- * 问题表 服务实现类
- * </p>
+ * 问题表
  *
  * @author yurong333
  * @since 2022-12-30
@@ -219,47 +218,21 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
-    public JSONArray getQuestionsBySurveyId(Integer surveyId) {
-        // 问题列表
-        JSONArray array = new JSONArray();
+    public List<Question> getQuestionsBySurveyId(Integer surveyId) {
+        return this.lambdaQuery().eq(Question::getBelongSurveyId, surveyId).list();
+    }
+
+    @Override
+    public List<Question> getQuestionsAndOptionsBySurveyId(Integer surveyId) {
         // 获取所有问题
-        List<Question> questionList = this.lambdaQuery().eq(Question::getBelongSurveyId, surveyId).list();
-        // 组装问题和选项，并添加到JSONArray中
-        for (Question question : questionList) {
-            JSONObject questionJson = new JSONObject();
-            buildQuestion(question, questionJson);
-            buildOptions(question, questionJson);
-            // todo 组装其他
-            array.add(questionJson);
+        List<Question> questions = getQuestionsBySurveyId(surveyId);
+        // 组装选项
+        for (Question question : questions) {
+            List<Option> options = optionService.getOptionsByQuestionId(question.getId());
+            question.setOptions(options);
+            // todo 组装问题的其他部分
         }
-        return array;
+        return questions;
     }
 
-    /**
-     * 组装问题
-     * @param question
-     * @param questionJson
-     */
-    private void buildQuestion(Question question, JSONObject questionJson) {
-        questionJson.put(Constant.QUESTION_NAME, question.getQuestionName());
-        questionJson.put(Constant.QUESTION_CODE, question.getQuestionCode());
-    }
-
-    /**
-     * 组装选项
-     * @param question
-     * @param questionJson
-     */
-    private void buildOptions(Question question, JSONObject questionJson) {
-        if (!question.getQuestionCode().equals(QuestionEnum.SINGLE_FILL.getCode())) {
-            JSONArray optionArray = new JSONArray();
-            List<Option> optionList = optionService.getOptionsByQuestionId(question.getId());
-            for (Option option : optionList) {
-                JSONObject optionJson = new JSONObject();
-                optionJson.put(Constant.MY_OPTION, option.getMyOption());
-                optionArray.add(optionJson);
-            }
-            questionJson.put(Constant.OPTIONS, optionArray);
-        }
-    }
 }

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lyr.qs.constant.Constant;
 import com.lyr.qs.dto.SurveyDto;
+import com.lyr.qs.entity.Question;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
 import com.lyr.qs.mapper.SurveyMapper;
@@ -19,10 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
- * 问卷表 服务实现类
+ * 问卷表
  *
  * @author yurong333
  * @since 2022-12-30
@@ -121,20 +123,15 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     }
 
     @Override
-    public JSONObject getQuestionnaireById(Integer id) {
-        // 获取Survey
+    public Survey getSurveyDataById(Integer id) {
         Survey survey = getSurveyById(id);
         if (survey == null) {
             return null;
         }
         // 根据问卷id获取所有问题(选择题包含选项)
-        JSONArray questions = questionService.getQuestionsBySurveyId(id);
-        // 组装问卷数据
-        JSONObject surveyData = new JSONObject();
-        surveyData.put(Constant.TITLE,survey.getTitle());
-        surveyData.put(Constant.DESCRIPTION,survey.getDescription());
-        surveyData.put(Constant.QUESTIONS,questions);
-        return surveyData;
+        List<Question> questions =  questionService.getQuestionsAndOptionsBySurveyId(id);
+        survey.setQuestions(questions);
+        return survey;
     }
 
     @Override
