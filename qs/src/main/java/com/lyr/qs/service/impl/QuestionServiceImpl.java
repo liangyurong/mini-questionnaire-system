@@ -220,15 +220,16 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
     @Override
     public JSONArray getQuestionsBySurveyId(Integer surveyId) {
-        // 返回数据
+        // 问题列表
         JSONArray array = new JSONArray();
         // 获取所有问题
         List<Question> questionList = this.lambdaQuery().eq(Question::getBelongSurveyId, surveyId).list();
-        // 组装问题和选项
+        // 组装问题和选项，并添加到JSONArray中
         for (Question question : questionList) {
             JSONObject questionJson = new JSONObject();
             buildQuestion(question, questionJson);
             buildOptions(question, questionJson);
+            // todo 组装其他
             array.add(questionJson);
         }
         return array;
@@ -250,20 +251,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
      * @param questionJson
      */
     private void buildOptions(Question question, JSONObject questionJson) {
-        // 单项填空题没有选项，直接返回
-        if(question.getQuestionCode().equals(QuestionEnum.SINGLE_FILL.getCode())){
-            return;
+        if (!question.getQuestionCode().equals(QuestionEnum.SINGLE_FILL.getCode())) {
+            JSONArray optionArray = new JSONArray();
+            List<Option> optionList = optionService.getOptionsByQuestionId(question.getId());
+            for (Option option : optionList) {
+                JSONObject optionJson = new JSONObject();
+                optionJson.put(Constant.MY_OPTION, option.getMyOption());
+                optionArray.add(optionJson);
+            }
+            questionJson.put(Constant.OPTIONS, optionArray);
         }
-        JSONArray optionArray = new JSONArray();
-        List<Option> optionList = optionService.getOptionsByQuestionId(question.getId());
-        for (Option option : optionList) {
-            JSONObject optionJson = new JSONObject();
-            optionJson.put(Constant.MY_OPTION,option.getMyOption());
-            optionArray.add(optionJson);
-        }
-        questionJson.put(Constant.OPTIONS,optionArray);
     }
-
-
-
 }

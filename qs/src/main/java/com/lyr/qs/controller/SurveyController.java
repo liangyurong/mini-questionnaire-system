@@ -27,7 +27,7 @@ public class SurveyController {
         return new ResponseResult(HttpStatus.OK.value(), "获取问卷列表成功", surveyPage);
     }
 
-    @ApiOperation("根据问卷id获取问卷数据")
+    @ApiOperation("根据问卷id获取一份问卷数据")
     @GetMapping("/getSurveyById")
     public ResponseResult getSurveyById(@RequestParam("id") Integer id) {
         JSONObject json = surveyService.getQuestionnaireById(id);
@@ -69,7 +69,7 @@ public class SurveyController {
         surveyService.fillQuestionnaire(json);
         return new ResponseResult(HttpStatus.OK.value(), "填写问卷成功");
     }
-//
+
 //    @ApiOperation("根据问卷id和手机号，获取问卷数据")
 //    @GetMapping("/getSurveyData/{surveyId}/{phone}")
 //    public ResponseResult getSurveyData(@PathVariable("surveyId") String surveyId,@PathVariable("phone") String phone ) {

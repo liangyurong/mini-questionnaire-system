@@ -124,14 +124,17 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     public JSONObject getQuestionnaireById(Integer id) {
         // 获取Survey
         Survey survey = getSurveyById(id);
-        // 获取所有Question和问题对应的选项
+        if (survey == null) {
+            return null;
+        }
+        // 根据问卷id获取所有问题(选择题包含选项)
         JSONArray questions = questionService.getQuestionsBySurveyId(id);
-        // 问卷数据
-        JSONObject json = new JSONObject();
-        json.put(Constant.TITLE,survey.getTitle());
-        json.put(Constant.DESCRIPTION,survey.getDescription());
-        json.put(Constant.QUESTIONS,questions);
-        return json;
+        // 组装问卷数据
+        JSONObject surveyData = new JSONObject();
+        surveyData.put(Constant.TITLE,survey.getTitle());
+        surveyData.put(Constant.DESCRIPTION,survey.getDescription());
+        surveyData.put(Constant.QUESTIONS,questions);
+        return surveyData;
     }
 
     @Override
