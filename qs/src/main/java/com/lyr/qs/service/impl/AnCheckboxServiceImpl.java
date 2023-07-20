@@ -7,9 +7,7 @@ import com.lyr.qs.service.AnCheckboxService;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
- * 多项选择题答题表 服务实现类
- * </p>
+ * 多项选择题答题表
  *
  * @author yurong333
  * @since 2022-12-30

@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lyr.qs.entity.AnText;
 
 /**
- * <p>
- * 单项填空题答题表 服务类
- * </p>
+ * 单项填空题答题表
  *
  * @author yurong333
  * @since 2022-12-30

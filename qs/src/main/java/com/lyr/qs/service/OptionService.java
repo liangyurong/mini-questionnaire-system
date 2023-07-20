@@ -8,7 +8,7 @@ import com.lyr.qs.exception.CustomException;
 import java.util.List;
 
 /**
- * 选项表服务类
+ * 选项表
  *
  * @author yurong333
  * @since 2022-12-30

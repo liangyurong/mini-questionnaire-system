@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lyr.qs.entity.AnCheckbox;
 
 /**
- * <p>
- * 多项选择题答题表 服务类
- * </p>
+ * 多项选择题
  *
  * @author yurong333
  * @since 2022-12-30

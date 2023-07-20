@@ -7,9 +7,7 @@ import com.lyr.qs.service.AnswerSurveyService;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
- * 答卷表的基本信息 服务实现类
- * </p>
+ * 答卷表的基本信息
  *
  * @author yurong333
  * @since 2022-12-30
