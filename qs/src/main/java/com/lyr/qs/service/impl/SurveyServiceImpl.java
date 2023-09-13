@@ -37,7 +37,6 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     private QuestionService questionService;
 
     // todo 首先从redis中获取
-    // 对应的 `handleException` 方法需要位于 `ExceptionUtil` 类中，并且必须为 static 函数.
     @Override
     public Page<Survey> page(SurveyDto dto) {
         // 如果查询参数为空，则使用默认分页查询条件
@@ -73,6 +72,7 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     }
 
 
+    // todo lyr 2023-09-13 一开始就不能使用json结构来设计，必须使用类去设计
     @Override
     public void checkCreateSurveyDataIsEmpty(JSONObject json) throws CustomException {
         // 所有数据是否为空
@@ -128,7 +128,7 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
         if (survey == null) {
             return null;
         }
-        // 根据问卷id获取所有问题(选择题包含选项)
+        // 根据问卷id获取所有问题和问题的所有选项（仅限选择题）
         List<Question> questions =  questionService.getQuestionsAndOptionsBySurveyId(id);
         survey.setQuestions(questions);
         return survey;
