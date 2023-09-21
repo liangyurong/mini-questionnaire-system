@@ -39,10 +39,10 @@ public class Constant {
     public static String MY_TEXT = "myText";                       // 单项选择题的内容
 
     /**
-     * 问卷可见性 0-不可见 1-可见
+     * 问卷可见性 0-可见 1-不可见
      */
-    public static Integer SURVEY_VISIBILITY_UNABLE = 0;
-    public static Integer SURVEY_VISIBILITY_ABLE = 1;
+    public static Integer SURVEY_VISIBILITY_ABLE = 0;
+    public static Integer SURVEY_VISIBILITY_UNABLE = 1;
 
     /**
      * 问卷状态 0-设计 1-发布 2-结束

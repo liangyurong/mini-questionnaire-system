@@ -7,18 +7,23 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lyr.qs.constant.Constant;
 import com.lyr.qs.dto.SurveyDto;
+import com.lyr.qs.entity.Option;
 import com.lyr.qs.entity.Question;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.form.OptionAddForm;
+import com.lyr.qs.form.QuestionAddForm;
+import com.lyr.qs.form.SurveyAddForm;
 import com.lyr.qs.mapper.SurveyMapper;
+import com.lyr.qs.service.OptionService;
 import com.lyr.qs.service.QuestionService;
 import com.lyr.qs.service.SurveyService;
-import com.lyr.qs.util.EmptyUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -34,80 +39,70 @@ import java.util.Optional;
 @Slf4j
 public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> implements SurveyService {
 
+    @Resource
     private QuestionService questionService;
+    @Resource
+    private OptionService optionService;
 
     // todo 首先从redis中获取
     @Override
     public Page<Survey> page(SurveyDto dto) {
-        // 如果查询参数为空，则使用默认分页查询条件
-        if (dto == null) {
-            return page(new Page<>(Constant.SURVEY_QUERY_CURRENT, Constant.SURVEY_QUERY_SIZE), null);
-        }
-        // 获取当前页码，若未指定则使用默认值
-        int current = Optional.ofNullable(dto.getCurrent()).orElse(Constant.SURVEY_QUERY_CURRENT);
-        // 获取每页显示数量，若未指定或超过最大限制则使用默认值
-        int size = Optional.ofNullable(dto.getSize()).filter(s -> s <= Constant.SURVEY_QUERY_SIZE).orElse(Constant.SURVEY_QUERY_SIZE);
-        // 设置查询条件：问卷可见、按照创建时间降序排序、匹配Title、匹配Description、匹配SurveyState
-        LambdaQueryWrapper<Survey> wrapper = new LambdaQueryWrapper<Survey>()
-                .eq(Survey::getVisibility, Constant.SURVEY_VISIBILITY_ABLE)
-                .orderByDesc(Survey::getCreateTime)
-                .like(!StringUtils.isEmpty(dto.getTitle()), Survey::getTitle, dto.getTitle())
-                .like(!StringUtils.isEmpty(dto.getDescription()), Survey::getDescription, dto.getDescription())
-                .eq(!StringUtils.isEmpty(dto.getSurveyState()), Survey::getSurveyState, dto.getSurveyState());
+        // 查询条件
+        LambdaQueryWrapper<Survey> wrapper = this.getWrapper(dto);
+        // 当前页，分页大小
+        int current = this.getCurrent(dto);
+        int size = this.getSize(dto);
+        // 分页结果
         return page(new Page<>(current, size), wrapper);
+    }
+
+    private LambdaQueryWrapper<Survey> getWrapper(SurveyDto dto){
+        LambdaQueryWrapper<Survey> wrapper = new LambdaQueryWrapper<>();
+        if(dto == null){
+            wrapper.eq(Survey::getVisibility, Constant.SURVEY_VISIBILITY_ABLE).orderByDesc(Survey::getCreateTime);
+        }else {
+            // 设置查询条件：问卷可见、按照创建时间降序排序、匹配Title、匹配Description、匹配SurveyState
+            wrapper.eq(Survey::getVisibility, Constant.SURVEY_VISIBILITY_ABLE)
+                    .orderByDesc(Survey::getCreateTime)
+                    .like(!StringUtils.isEmpty(dto.getTitle()), Survey::getTitle, dto.getTitle())
+                    .like(!StringUtils.isEmpty(dto.getDescription()), Survey::getDescription, dto.getDescription())
+                    .eq(!StringUtils.isEmpty(dto.getSurveyState()), Survey::getSurveyState, dto.getSurveyState());
+        }
+        return wrapper;
+    }
+
+
+    private int getCurrent(SurveyDto dto) {
+        if (dto == null) {
+            return Constant.SURVEY_QUERY_CURRENT;
+        }else {
+            // 若未指定则使用默认值
+            return Optional.ofNullable(dto.getCurrent()).orElse(Constant.SURVEY_QUERY_CURRENT);
+        }
+    }
+
+    private int getSize(SurveyDto dto) {
+        if(dto == null){
+            return Constant.SURVEY_QUERY_SIZE;
+        }else {
+            // 若未指定或超过最大限制则使用默认值
+            return Optional.ofNullable(dto.getSize()).filter(s -> s <= Constant.SURVEY_QUERY_SIZE).orElse(Constant.SURVEY_QUERY_SIZE);
+        }
+
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createQuestionnaire(JSONObject json) throws CustomException {
-        // 检查问卷的合法性
-        checkCreateSurveyDataIsEmpty(json);
-        // 生成问卷实体
-        String title = json.getString(Constant.TITLE);
-        String description = json.getString(Constant.DESCRIPTION);
-        Survey survey = createSurvey(title, description);
-        // 生成所有问题实体和所有选项实体
-        JSONArray questions = json.getJSONArray(Constant.QUESTIONS);
-        questionService.createQuestionsAndOptions(questions, survey.getId());
+    public Integer createQuestionnaire(SurveyAddForm surveyAddForm) {
+        // 创建Survey并保存
+        Integer surveyId = this.buildSurvey(surveyAddForm.getTitle(), surveyAddForm.getDescription());
+        // 创建多个Question并批量保存
+        this.buildQuestions(surveyAddForm.getQuestions(), surveyId);
+        return surveyId;
     }
 
-
-    // todo lyr 2023-09-13 一开始就不能使用json结构来设计，必须使用类去设计
-    @Override
-    public void checkCreateSurveyDataIsEmpty(JSONObject json) throws CustomException {
-        // 所有数据是否为空
-        if (EmptyUtils.isEmpty(json)) {
-            throw new CustomException(Constant.FAIL,"问卷数据为空");
-        }
-
-        // 问卷标题是否为空
-        String title = json.getString(Constant.TITLE);
-        if (EmptyUtils.isEmpty(title)) {
-            throw new CustomException(Constant.FAIL,"问卷标题为空");
-        }
-        // 问卷描述是否为空
-        String description = json.getString(Constant.DESCRIPTION);
-        if (EmptyUtils.isEmpty(description)) {
-            throw new CustomException(Constant.FAIL,"问卷描述为空");
-        }
-        // 问题数量是否为空
-        JSONArray questions = json.getJSONArray(Constant.QUESTIONS);
-        if (EmptyUtils.isEmpty(questions) || questions.size() == 0) {
-            throw new CustomException(Constant.FAIL,"问题数量为空");
-        }
-        // 所有问题的题目和选项是否为空
-        int size = questions.size();
-        for (int index = 0; index < size; index++) {
-            JSONObject question = questions.getJSONObject(index);
-            if (questionService.checkQuestionIsEmpty(question)) {
-                throw new CustomException(Constant.FAIL,"问题标题或选项标题或选项数量为空，请仔细检查");
-            }
-        }
-    }
-
-
-    @Override
-    public Survey createSurvey(String title, String description) {
+    // 创建单个Survey并保存
+    private Integer buildSurvey(String title, String description) {
         Survey survey = Survey.builder()
                 .title(title)
                 .description(description)
@@ -115,22 +110,60 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
                 .surveyState(Constant.SURVEY_STATE_DESIGN)
                 .surveyQuestionNum(0)
                 .visibility(Constant.SURVEY_VISIBILITY_ABLE)
-                .surveyQuestionNum(0)
                 .answerNum(0)
                 .build();
         this.save(survey);
-        return survey;
+        return survey.getId();
+    }
+
+    // 创建多个Question并批量保存
+    private void buildQuestions(List<QuestionAddForm> questionAddForms, Integer surveyId) {
+        for (int i = 0; i < questionAddForms.size(); i++) {
+            QuestionAddForm questionAddForm = questionAddForms.get(i);
+            Integer questionId = this.buildQuestion(questionAddForm, surveyId,i);
+            // 创建多个Option并保存
+            this.buildOptions(questionAddForm.getOptions(), questionId);
+        }
+    }
+
+    // 创建单个question并保存
+    private Integer buildQuestion(QuestionAddForm add,Integer surveyId,Integer orderNumber){
+        Question question = new Question();
+        question.setSurveyId(surveyId);
+        question.setContent(add.getContent());
+        question.setType(add.getType());
+        question.setOrderNumber(orderNumber);
+        question.setIsRequired(Constant.SURVEY_MUST_ANSWER);
+        questionService.save(question);
+        return question.getId();
+    }
+
+    // 创建多个option并保存
+    private void buildOptions(List<OptionAddForm> optionAddForms, Integer questionId) {
+        for (int i = 0; i < optionAddForms.size(); i++) {
+            this.buildOption(optionAddForms.get(i),questionId,i);
+        }
+    }
+
+    // 创建单个option并保存
+    private Integer buildOption(OptionAddForm optionAddForm, Integer questionId,Integer orderNumber) {
+        Option option = new Option();
+        option.setQuestionId(questionId);
+        option.setContent(optionAddForm.getContent());
+        option.setOrderNumber(orderNumber);
+        optionService.save(option);
+        return option.getId();
     }
 
     @Override
-    public Survey getSurveyDataById(Integer id) {
+    public Survey getById(Integer id) {
         Survey survey = getSurveyById(id);
         if (survey == null) {
             return null;
         }
         // 根据问卷id获取所有问题和问题的所有选项（仅限选择题）
         List<Question> questions =  questionService.getQuestionsAndOptionsBySurveyId(id);
-        survey.setQuestions(questions);
+//        survey.setQuestions(questions);
         return survey;
     }
 
@@ -150,8 +183,6 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateQuestionnaire(JSONObject json) throws CustomException {
-        // 检查问卷数据合法性
-        checkCreateSurveyDataIsEmpty(json);
         checkSurveyId(json.getString(Constant.ID));
 
         // 更新问卷实体
@@ -188,11 +219,23 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
         this.saveOrUpdate(survey);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteById(Integer id) {
+    public void remove(Integer id) {
+        // 删除问卷
+        this.deleteById(id);
+        // 删除问题
+        List<Integer> questionIds = questionService.deleteQuestionsBySurveyId(id);
+        // 删除选项
+        optionService.deleteOptionsByQuestionIds(questionIds);
+        // 删除选项答案 TODO
+    }
+
+    // 根据id删除Survey
+    private boolean deleteById(Integer id) {
         Survey survey = this.getById(id);
         survey.setVisibility(Constant.SURVEY_VISIBILITY_UNABLE);
-        this.updateById(survey);
+        return this.updateById(survey);
     }
 
     @Override

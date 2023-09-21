@@ -2,17 +2,4 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lyr.qs.mapper.OptionMapper">
 
-    <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.lyr.qs.entity.Option">
-        <id column="id" property="id" />
-        <result column="belong_question_id" property="belongQuestionId" />
-        <result column="my_option" property="myOption" />
-        <result column="order_id" property="orderId" />
-    </resultMap>
-
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        id, belong_question_id, my_option, order_id
-    </sql>
-
 </mapper>

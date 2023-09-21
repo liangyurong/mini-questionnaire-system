@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.io.Serializable;
@@ -35,34 +36,27 @@ public class Question implements Serializable {
     /**
      * 问题所属问卷，对应问卷表主键
      */
-    private Integer belongSurveyId;
+    @Schema(description = "问题所属问卷，对应问卷表主键")
+    private Integer surveyId;
 
     /**
      * 问题描述
      */
-    private String questionName;
+    private String content;
 
     /**
-     * 问题类型
+     * 问题类型 0-单选题 1-多选题 2-单项填空题
      */
-    private String questionType;
-
-    /**
-     * 问题类型编码，0-单选题 1-多选题 2-单项填空题
-     */
-    private Integer questionCode;
+    private String type;
 
     /**
      * 问题在问卷中的排列序号，从0开始
      */
-    private Integer orderId;
+    private Integer orderNumber;
 
     /**
      * 是否必答 0非必答 1必答
      */
     private Integer isRequired;
-
-    @TableField(exist = false)
-    private List<Option> options;
 
 }

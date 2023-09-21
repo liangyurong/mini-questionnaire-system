@@ -2,10 +2,8 @@ package com.lyr.qs.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class SurveyDto {
 
@@ -14,5 +12,11 @@ public class SurveyDto {
     private String title;
     private String description;
     private Integer surveyState;
+
+    // 设置默认的参数
+    SurveyDto(){
+        current = 0;
+        size = 10;
+    }
 
 }

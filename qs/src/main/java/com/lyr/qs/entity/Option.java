@@ -32,17 +32,17 @@ public class Option implements Serializable {
     /**
      * 选项所属的问题id，对应题目表的主键
      */
-    private Integer BelongQuestionId;
+    private Integer questionId;
 
     /**
      * 选项描述
      */
-    private String myOption;
+    private String content;
 
     /**
      * 选项序号，从0开始
      */
-    private Integer orderId;
+    private Integer orderNumber;
 
 
 }

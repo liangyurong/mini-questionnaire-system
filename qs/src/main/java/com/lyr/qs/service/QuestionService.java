@@ -17,13 +17,6 @@ import java.util.List;
 public interface QuestionService extends IService<Question> {
 
     /**
-     * 创建所有问题和所有选项
-     * @param questions 所有问题的json数据
-     * @param surveyId 问卷id
-     */
-    void createQuestionsAndOptions(JSONArray questions, Integer surveyId) throws CustomException;
-
-    /**
      * 创建单个问题
      * @param question
      * @param index
@@ -83,4 +76,9 @@ public interface QuestionService extends IService<Question> {
      * @return 所有问题和问题的所有选项（仅限选择题）
      */
     List<Question> getQuestionsAndOptionsBySurveyId(Integer surveyId);
+
+    /**
+     * 根据问卷id删除所有的问题
+     */
+    List<Integer> deleteQuestionsBySurveyId(Integer surveyId);
 }

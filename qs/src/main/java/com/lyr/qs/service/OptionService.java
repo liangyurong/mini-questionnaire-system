@@ -16,11 +16,27 @@ import java.util.List;
 public interface OptionService extends IService<Option> {
 
     /**
+     * 根据问题id获取选项列表
+     */
+    List<Option> getOptionsByQuestionId(Integer questionId);
+
+
+    /**
+     * 根据问题id删除选项
+     */
+    void deleteOptionsByQuestionId(Integer questionId);
+
+    /**
+     * 根据问题id列表删除选项
+     */
+    void deleteOptionsByQuestionIds(List<Integer> questionIds);
+
+    /**
      * 生成所有选项
      * @param question 问题的json数据
      * @param questionId 问题id
      */
-    void createOptions(JSONObject question, Integer questionId);
+
 
     /**
      * 生成选项实体
@@ -28,7 +44,7 @@ public interface OptionService extends IService<Option> {
      * @param index 选项的顺序
      * @param questionId 问题id
      */
-    void createOption(JSONObject option, int index, Integer questionId);
+
 
     /**
      * 更新选项实体
@@ -36,25 +52,21 @@ public interface OptionService extends IService<Option> {
      * @param index 选项的顺序
      * @param questionId 问题id
      */
-    void updateOption(JSONObject option,Integer index, Integer questionId) throws CustomException;
 
     /**
      * 更新或新增 选项实体
      * @param option 选项的json数据
      * @param questionId 问题id
      */
-    void updateOrCreateOption(JSONObject option, Integer index, Integer questionId) throws CustomException;
 
     /**
      * 根据问题id删除问题的所有选项
      * @param questionId
      */
-    void removeOptionsByQuestionId(Integer questionId);
 
     /**
      * 根据问题id获取所有的选项
      * @param questionId 问题id
      * @return
      */
-    List<Option> getOptionsByQuestionId(Integer questionId);
 }

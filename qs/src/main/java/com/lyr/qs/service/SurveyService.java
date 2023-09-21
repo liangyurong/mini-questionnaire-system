@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lyr.qs.dto.SurveyDto;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.form.SurveyAddForm;
 
 /**
  * 问卷表
@@ -24,25 +25,18 @@ public interface SurveyService extends IService<Survey> {
     Page<Survey> page(SurveyDto dto);
 
     /**
-     * 创建一张问卷，包含问题和选项
-     * @param json 问卷数据
+     * 创建问卷
+     * @param surveyAddForm
+     * @throws CustomException
      */
-    void createQuestionnaire(JSONObject json) throws CustomException;
-
-    /**
-     * 保存问卷实体
-     * @param title
-     * @param description
-     * @return
-     */
-    Survey createSurvey(String title, String description);
+    Integer createQuestionnaire(SurveyAddForm surveyAddForm);
 
     /**
      * 根据问卷id获取一张问卷内容
      * @param id 问卷id
      * @return
      */
-    Survey getSurveyDataById(Integer id);
+    Survey getById(Integer id);
 
     /**
      * 根据问卷id获取问卷,并且该问卷具有可见性，因此不能使用MyBatisPlus自带的getById()方法
@@ -60,7 +54,7 @@ public interface SurveyService extends IService<Survey> {
     /**
      * 根据问卷id删除问卷。只是将问卷的visibility改为0，在物理层面并没有删除
      */
-    void deleteById(Integer id);
+    void remove(Integer id);
 
     /**
      * 更新问卷状态
@@ -75,18 +69,6 @@ public interface SurveyService extends IService<Survey> {
      */
     void fillQuestionnaire(JSONObject json) throws CustomException;
 
-    /**
-     * 创建问卷时，需要检查问卷合法性
-     *      1、传递的问卷数据不能为空
-     *      2、问卷标题不能为空
-     *      3、问卷描述不能为空
-     *      4、问题数量不能为0
-     *      5、问题题目不能为空
-     *      6、选项数量不能为0
-     *      7、选项题目不能为空
-     *  @param json 问卷数据
-     */
-    void checkCreateSurveyDataIsEmpty(JSONObject json) throws CustomException;
 
     /**
      * 检查填写数据是否符合规则

@@ -5,40 +5,42 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyr.qs.dto.SurveyDto;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.form.SurveyAddForm;
 import com.lyr.qs.result.ResponseResult;
 import com.lyr.qs.service.SurveyService;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/survey")
 @CrossOrigin("*")
 public class SurveyController {
 
-    @Autowired
     private SurveyService surveyService;
 
     @ApiOperation("获取问卷列表，分页展示")
-    @GetMapping("/list")
-    public ResponseResult list(@RequestBody(required = false) SurveyDto dto) {
+    @GetMapping("/page")
+    public ResponseResult<Page<Survey>> list(@RequestBody(required = false) SurveyDto dto) {
         Page<Survey> surveyPage = surveyService.page(dto);
         return new ResponseResult(HttpStatus.OK.value(), "获取问卷列表成功", surveyPage);
     }
 
     @ApiOperation("根据问卷id获取一份问卷数据")
-    @GetMapping("/getSurveyById")
-    public ResponseResult getSurveyById(@RequestParam("id") Integer id) {
-        Survey survey = surveyService.getSurveyDataById(id);
-        return new ResponseResult(HttpStatus.OK.value(), "获取问卷列表成功", survey);
+    @GetMapping("/getById")
+    public ResponseResult<Survey> getSurveyById(@RequestParam("id") Integer id) {
+        Survey survey = surveyService.getById(id);
+        return new ResponseResult<>(HttpStatus.OK.value(), "获取问卷列表成功", survey);
     }
 
-    @ApiOperation("创建一张问卷")
-    @PostMapping("/createQuestionnaire")
-    public ResponseResult createQuestionnaire(@RequestBody JSONObject json) throws Exception {
-        surveyService.createQuestionnaire(json);
+    // TODO 创建问卷
+    @ApiOperation("创建问卷")
+    @PostMapping("/save")
+    public ResponseResult createQuestionnaire(@RequestBody @Validated SurveyAddForm surveyAddForm ){
+        Integer surveyId = surveyService.createQuestionnaire(surveyAddForm);
         return new ResponseResult(HttpStatus.OK.value(), "创建问卷成功");
     }
 
@@ -50,9 +52,9 @@ public class SurveyController {
     }
 
     @ApiOperation("根据问卷id删除问卷")
-    @GetMapping("/deleteById")
-    public ResponseResult deleteSurveyBySurveyId(@RequestParam("id") Integer id) {
-        surveyService.deleteById(id);
+    @GetMapping("/remove/{id}")
+    public ResponseResult remove(@PathVariable("id") Integer id) {
+        surveyService.remove(id);
         return new ResponseResult(HttpStatus.OK.value(), "删除问卷成功");
     }
 

@@ -2,20 +2,4 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lyr.qs.mapper.QuestionMapper">
 
-    <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.lyr.qs.entity.Question">
-        <id column="id" property="id" />
-        <result column="belong_survey_id" property="belongSurveyId" />
-        <result column="question_name" property="questionName" />
-        <result column="question_type" property="questionType" />
-        <result column="question_code" property="questionCode" />
-        <result column="order_id" property="orderId" />
-        <result column="is_required" property="isRequired" />
-    </resultMap>
-
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        id, belong_survey_id, question_name, question_type, question_code, order_id, is_required
-    </sql>
-
 </mapper>

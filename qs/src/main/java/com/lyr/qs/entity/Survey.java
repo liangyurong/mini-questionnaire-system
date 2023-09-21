@@ -68,11 +68,9 @@ public class Survey implements Serializable {
     private Integer answerNum;
 
     /**
-     * 是否显示  1显示 0不显示 。主要用于问卷删除
+     * 是否显示  0显示  1不显示 。主要用于问卷删除
      */
     private Integer visibility;
 
-    @TableField(exist = false)
-    private List<Question> questions = new LinkedList<>();
 
 }
