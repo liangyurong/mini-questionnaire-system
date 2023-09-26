@@ -161,19 +161,19 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     }
 
     @Override
-    public SurveyVO getById(Integer id) {
-        SurveyVO vo =this.getSurveyVOById(id);
+    public SurveyVO getSurveyVOById(Integer id) {
+        Survey survey =this.getById(id);
+        SurveyVO vo = BeanUtil.copyProperties(survey, SurveyVO.class);
         vo.setQuestions(questionService.getQuestionsBySurveyId(id));
         return vo;
     }
 
     @Override
-    public SurveyVO getSurveyVOById(Integer id) {
-        Survey survey = this.lambdaQuery()
+    public Survey getById(Integer id) {
+        return this.lambdaQuery()
                 .eq(Survey::getId, id)
                 .eq(Survey::getVisibility, Constant.SURVEY_VISIBILITY_ABLE)
                 .one();
-        return BeanUtil.copyProperties(survey,SurveyVO.class);
     }
 
     /**

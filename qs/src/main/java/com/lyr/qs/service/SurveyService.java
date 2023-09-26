@@ -37,7 +37,7 @@ public interface SurveyService extends IService<Survey> {
      * @param id 问卷id
      * @return
      */
-    SurveyVO getById(Integer id) throws CustomException;
+    Survey getById(Integer id) throws CustomException;
 
     /**
      * 根据问卷id获取问卷,并且该问卷具有可见性，因此不能使用MyBatisPlus自带的getById()方法
