@@ -2,7 +2,7 @@ package com.lyr.qs.config;
 
 import com.lyr.qs.constant.Constant;
 import com.lyr.qs.exception.CustomException;
-import com.lyr.qs.result.ResponseResult;
+import com.lyr.qs.result.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,26 +21,26 @@ public class GlobalExceptionHandler {
      * 处理自定义异常
      */
     @ExceptionHandler(CustomException.class)
-    public ResponseResult handleMpException(CustomException e) {
-        return new ResponseResult(Constant.FAIL, e.toString());
+    public R handleMpException(CustomException e) {
+        return new R(Constant.FAIL, e.toString());
     }
 
     /**
      * 这个是为了抓取意想不到的异常，因为我们是无法抓取到全部的异常的
      */
     @ExceptionHandler(Exception.class)
-    public ResponseResult handleException(Exception e) {
-        return new ResponseResult(Constant.FAIL, e.toString());
+    public R handleException(Exception e) {
+        return new R(Constant.FAIL, e.toString());
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseResult runtimeException(RuntimeException e) {
-        return new ResponseResult(Constant.FAIL, e.toString());
+    public R runtimeException(RuntimeException e) {
+        return new R(Constant.FAIL, e.toString());
     }
 
     @ExceptionHandler(TimeoutException.class)
-    public ResponseResult timeoutException(TimeoutException e) {
-        return new ResponseResult(Constant.FAIL, e.toString());
+    public R timeoutException(TimeoutException e) {
+        return new R(Constant.FAIL, e.toString());
     }
 
 }

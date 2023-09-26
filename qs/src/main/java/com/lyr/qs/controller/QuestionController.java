@@ -1,6 +1,6 @@
 package com.lyr.qs.controller;
 
-import com.lyr.qs.result.ResponseResult;
+import com.lyr.qs.result.R;
 import com.lyr.qs.service.QuestionService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +24,9 @@ public class QuestionController {
 
     @ApiOperation("根据问题id删除问题")
     @GetMapping("/delete")
-    public ResponseResult delete(@RequestParam("id")Integer id) {
+    public R delete(@RequestParam("id")Integer id) {
         questionService.removeQuestionById(id);
-        return new ResponseResult(HttpStatus.OK.value(), "删除问题成功");
+        return new R(HttpStatus.OK.value(), "删除问题成功");
     }
 
 }

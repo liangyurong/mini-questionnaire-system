@@ -1,6 +1,6 @@
 package com.lyr.qs.controller;
 
-import com.lyr.qs.result.ResponseResult;
+import com.lyr.qs.result.R;
 import com.lyr.qs.service.OptionService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +25,9 @@ public class OptionController {
 
     @ApiOperation("根据选项id删除选项")
     @GetMapping("/delete")
-    public ResponseResult delete(@RequestParam("id")Integer id) {
+    public R delete(@RequestParam("id")Integer id) {
         optionService.removeById(id);
-        return new ResponseResult(HttpStatus.OK.value(), "删除选项成功");
+        return new R(HttpStatus.OK.value(), "删除选项成功");
     }
 }
 

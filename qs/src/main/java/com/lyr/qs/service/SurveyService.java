@@ -7,6 +7,7 @@ import com.lyr.qs.dto.SurveyDto;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
 import com.lyr.qs.form.SurveyAddForm;
+import com.lyr.qs.vo.SurveyVO;
 
 /**
  * 问卷表
@@ -36,14 +37,14 @@ public interface SurveyService extends IService<Survey> {
      * @param id 问卷id
      * @return
      */
-    Survey getById(Integer id);
+    SurveyVO getById(Integer id) throws CustomException;
 
     /**
      * 根据问卷id获取问卷,并且该问卷具有可见性，因此不能使用MyBatisPlus自带的getById()方法
      * @param id 问卷id
      * @return
      */
-    Survey getSurveyById(Integer id);
+    SurveyVO getSurveyVOById(Integer id);
 
     /**
      * 更新问卷

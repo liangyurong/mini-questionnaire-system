@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lyr.qs.entity.Option;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.vo.OptionVO;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface OptionService extends IService<Option> {
     /**
      * 根据问题id获取选项列表
      */
-    List<Option> getOptionsByQuestionId(Integer questionId);
+    List<OptionVO> getOptionsByQuestionId(Integer questionId);
 
 
     /**

@@ -6,8 +6,9 @@ import com.lyr.qs.dto.SurveyDto;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
 import com.lyr.qs.form.SurveyAddForm;
-import com.lyr.qs.result.ResponseResult;
+import com.lyr.qs.result.R;
 import com.lyr.qs.service.SurveyService;
+import com.lyr.qs.vo.SurveyVO;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,53 +25,52 @@ public class SurveyController {
 
     @ApiOperation("获取问卷列表，分页展示")
     @GetMapping("/page")
-    public ResponseResult<Page<Survey>> list(@RequestBody(required = false) SurveyDto dto) {
+    public R<Page<Survey>> list(@RequestBody(required = false) SurveyDto dto) {
         Page<Survey> surveyPage = surveyService.page(dto);
-        return new ResponseResult(HttpStatus.OK.value(), "获取问卷列表成功", surveyPage);
+        return new R(HttpStatus.OK.value(), "获取问卷列表成功", surveyPage);
     }
 
     @ApiOperation("根据问卷id获取一份问卷数据")
-    @GetMapping("/getById")
-    public ResponseResult<Survey> getSurveyById(@RequestParam("id") Integer id) {
-        Survey survey = surveyService.getById(id);
-        return new ResponseResult<>(HttpStatus.OK.value(), "获取问卷列表成功", survey);
+    @GetMapping("/{id}")
+    public R<SurveyVO> getById(@PathVariable("id") Integer id) throws CustomException {
+        SurveyVO surveyVO = surveyService.getById(id);
+        return new R<>(HttpStatus.OK.value(), "获取问卷列表成功", surveyVO);
     }
 
-    // TODO 创建问卷
     @ApiOperation("创建问卷")
     @PostMapping("/save")
-    public ResponseResult createQuestionnaire(@RequestBody @Validated SurveyAddForm surveyAddForm ){
+    public R createQuestionnaire(@RequestBody @Validated SurveyAddForm surveyAddForm ){
         Integer surveyId = surveyService.createQuestionnaire(surveyAddForm);
-        return new ResponseResult(HttpStatus.OK.value(), "创建问卷成功");
+        return new R(HttpStatus.OK.value(), "创建问卷成功");
     }
 
     @ApiOperation("更新问卷")
     @PostMapping("/updateQuestionnaire")
-    public ResponseResult updateQuestionnaire(@RequestBody JSONObject json) throws Exception {
+    public R updateQuestionnaire(@RequestBody JSONObject json) throws Exception {
         surveyService.updateQuestionnaire(json);
-        return new ResponseResult(HttpStatus.OK.value(), "更新问卷成功");
+        return new R(HttpStatus.OK.value(), "更新问卷成功");
     }
 
     @ApiOperation("根据问卷id删除问卷")
     @GetMapping("/remove/{id}")
-    public ResponseResult remove(@PathVariable("id") Integer id) {
+    public R remove(@PathVariable("id") Integer id) {
         surveyService.remove(id);
-        return new ResponseResult(HttpStatus.OK.value(), "删除问卷成功");
+        return new R(HttpStatus.OK.value(), "删除问卷成功");
     }
 
 
     @ApiOperation("改变问卷的状态：设计中->发布，发布->结束，结束->发布")
     @GetMapping("/updateSurveyState")
-    public ResponseResult updateSurveyState(@RequestParam("id") Integer id, @RequestParam("surveyState") Integer surveyState) {
+    public R updateSurveyState(@RequestParam("id") Integer id, @RequestParam("surveyState") Integer surveyState) {
         surveyService.updateSurveyState(id, surveyState);
-        return new ResponseResult(HttpStatus.OK.value(), "更新问卷状态成功");
+        return new R(HttpStatus.OK.value(), "更新问卷状态成功");
     }
 
     @ApiOperation("填写问卷，并将填写的答卷数据存储到数据库")
     @PostMapping("/fillQuestionnaire")
-    public ResponseResult fillQuestionnaire(@RequestBody JSONObject json) throws CustomException {
+    public R fillQuestionnaire(@RequestBody JSONObject json) throws CustomException {
         surveyService.fillQuestionnaire(json);
-        return new ResponseResult(HttpStatus.OK.value(), "填写问卷成功");
+        return new R(HttpStatus.OK.value(), "填写问卷成功");
     }
 
 //    @ApiOperation("根据问卷id和手机号，获取问卷数据")

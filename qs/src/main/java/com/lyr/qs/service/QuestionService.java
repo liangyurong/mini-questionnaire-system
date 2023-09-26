@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lyr.qs.entity.Question;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.vo.QuestionVO;
 
 import java.util.List;
 
@@ -68,14 +69,8 @@ public interface QuestionService extends IService<Question> {
      * @param surveyId 问卷id
      * @return 所有问题
      */
-    List<Question> getQuestionsBySurveyId(Integer surveyId);
+    List<QuestionVO> getQuestionsBySurveyId(Integer surveyId);
 
-    /**
-     * 根据问卷id获取所有问题和问题的所有选项（仅限选择题）
-     * @param surveyId 问卷id
-     * @return 所有问题和问题的所有选项（仅限选择题）
-     */
-    List<Question> getQuestionsAndOptionsBySurveyId(Integer surveyId);
 
     /**
      * 根据问卷id删除所有的问题

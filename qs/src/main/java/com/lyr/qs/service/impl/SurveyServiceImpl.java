@@ -1,5 +1,6 @@
 package com.lyr.qs.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -18,6 +19,8 @@ import com.lyr.qs.mapper.SurveyMapper;
 import com.lyr.qs.service.OptionService;
 import com.lyr.qs.service.QuestionService;
 import com.lyr.qs.service.SurveyService;
+import com.lyr.qs.vo.QuestionVO;
+import com.lyr.qs.vo.SurveyVO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,6 +59,7 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
         return page(new Page<>(current, size), wrapper);
     }
 
+    // 查询条件
     private LambdaQueryWrapper<Survey> getWrapper(SurveyDto dto){
         LambdaQueryWrapper<Survey> wrapper = new LambdaQueryWrapper<>();
         if(dto == null){
@@ -71,7 +75,7 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
         return wrapper;
     }
 
-
+    // 当前页
     private int getCurrent(SurveyDto dto) {
         if (dto == null) {
             return Constant.SURVEY_QUERY_CURRENT;
@@ -81,6 +85,7 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
         }
     }
 
+    // 当前条数
     private int getSize(SurveyDto dto) {
         if(dto == null){
             return Constant.SURVEY_QUERY_SIZE;
@@ -156,23 +161,19 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     }
 
     @Override
-    public Survey getById(Integer id) {
-        Survey survey = getSurveyById(id);
-        if (survey == null) {
-            return null;
-        }
-        // 根据问卷id获取所有问题和问题的所有选项（仅限选择题）
-        List<Question> questions =  questionService.getQuestionsAndOptionsBySurveyId(id);
-//        survey.setQuestions(questions);
-        return survey;
+    public SurveyVO getById(Integer id) {
+        SurveyVO vo =this.getSurveyVOById(id);
+        vo.setQuestions(questionService.getQuestionsBySurveyId(id));
+        return vo;
     }
 
     @Override
-    public Survey getSurveyById(Integer id) {
-        return this.lambdaQuery()
+    public SurveyVO getSurveyVOById(Integer id) {
+        Survey survey = this.lambdaQuery()
                 .eq(Survey::getId, id)
-                .eq(Survey::getVisibility,Constant.SURVEY_VISIBILITY_ABLE)
+                .eq(Survey::getVisibility, Constant.SURVEY_VISIBILITY_ABLE)
                 .one();
+        return BeanUtil.copyProperties(survey,SurveyVO.class);
     }
 
     /**
@@ -183,8 +184,6 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateQuestionnaire(JSONObject json) throws CustomException {
-        checkSurveyId(json.getString(Constant.ID));
-
         // 更新问卷实体
         Integer id = Integer.parseInt(json.getString(Constant.ID));
         String title = json.getString(Constant.TITLE);
@@ -196,27 +195,19 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
         questionService.updateQuestionsAndOptions(questions,id);
     }
 
-    /**
-     * 更新问卷时，需要检查问卷id是否为空
-     */
-    private void checkSurveyId(String id) throws CustomException {
-        if(StringUtils.isEmpty(id)){
-            throw new CustomException(500,"问卷id为空，请仔细检查再提交");
-        }
-    }
 
     /**
      * 更新问卷
      */
     private void updateSurvey(Integer id, String title, String description) throws CustomException {
-        Survey survey = this.getSurveyById(id);
-        if(survey == null){
-            // todo 抛出自定义的异常，事务会回滚吗？
-            throw new CustomException(Constant.FAIL,"根据问卷id找不到问卷实体");
-        }
-        survey.setTitle(title);
-        survey.setDescription(description);
-        this.saveOrUpdate(survey);
+//        Survey survey = this.getSurveyVOById(id);
+//        if(survey == null){
+//            // todo 抛出自定义的异常，事务会回滚吗？
+//            throw new CustomException(Constant.FAIL,"根据问卷id找不到问卷实体");
+//        }
+//        survey.setTitle(title);
+//        survey.setDescription(description);
+//        this.saveOrUpdate(survey);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -233,23 +224,24 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
 
     // 根据id删除Survey
     private boolean deleteById(Integer id) {
-        Survey survey = this.getById(id);
-        survey.setVisibility(Constant.SURVEY_VISIBILITY_UNABLE);
-        return this.updateById(survey);
+//        Survey survey = this.getById(id);
+//        survey.setVisibility(Constant.SURVEY_VISIBILITY_UNABLE);
+//        return this.updateById(survey);
+        return true;
     }
 
     @Override
     public void updateSurveyState(Integer id, Integer surveyState) {
-        Survey survey = this.getById(id);
-        if(survey == null){
-            return;
-        }
-        // 问卷结束则不可变更状态
-        if(survey.getSurveyState().equals(Constant.SURVEY_STATE_FINISH)){
-            return;
-        }
-        survey.setSurveyState(surveyState);
-        this.updateById(survey);
+//        SurveyVo survey = this.getById(id);
+//        if(survey == null){
+//            return;
+//        }
+//        // 问卷结束则不可变更状态
+//        if(survey.getSurveyState().equals(Constant.SURVEY_STATE_FINISH)){
+//            return;
+//        }
+//        survey.setSurveyState(surveyState);
+//        this.updateById(survey);
     }
 
     @Override

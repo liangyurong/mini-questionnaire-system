@@ -1,8 +1,10 @@
 package com.lyr.qs.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lyr.qs.entity.Option;
 import com.lyr.qs.entity.Question;
@@ -10,6 +12,7 @@ import com.lyr.qs.exception.CustomException;
 import com.lyr.qs.mapper.*;
 import com.lyr.qs.service.OptionService;
 import com.lyr.qs.service.QuestionService;
+import com.lyr.qs.vo.QuestionVO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +54,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
-    public void updateQuestionsAndOptions(JSONArray questions, Integer surveyId) throws CustomException {
+    public void updateQuestionsAndOptions(JSONArray questions, Integer surveyId) {
 
     }
 
@@ -60,14 +63,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
     }
 
-    @Override
-    public List<Question> getQuestionsBySurveyId(Integer surveyId) {
-        return null;
-    }
 
     @Override
-    public List<Question> getQuestionsAndOptionsBySurveyId(Integer surveyId) {
-        return null;
+    public List<QuestionVO> getQuestionsBySurveyId(Integer surveyId) {
+        List<Question> list = this.lambdaQuery().eq(Question::getSurveyId, surveyId).list();
+        return list.stream().map(question -> {
+            QuestionVO questionVO = BeanUtil.copyProperties(question, QuestionVO.class);
+            questionVO.setOptions(optionService.getOptionsByQuestionId(question.getId()));
+            return questionVO;
+        }).collect(Collectors.toList());
     }
 
     @Override
