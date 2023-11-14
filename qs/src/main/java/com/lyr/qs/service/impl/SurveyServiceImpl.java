@@ -12,9 +12,7 @@ import com.lyr.qs.entity.Option;
 import com.lyr.qs.entity.Question;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
-import com.lyr.qs.form.OptionAddForm;
-import com.lyr.qs.form.QuestionAddForm;
-import com.lyr.qs.form.SurveyAddForm;
+import com.lyr.qs.form.*;
 import com.lyr.qs.mapper.SurveyMapper;
 import com.lyr.qs.service.OptionService;
 import com.lyr.qs.service.QuestionService;
@@ -29,7 +27,10 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 问卷表
@@ -98,11 +99,11 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer createQuestionnaire(SurveyAddForm surveyAddForm) {
+    public Integer createQuestionnaire(SurveyAddForm form) {
         // 创建Survey并保存
-        Integer surveyId = this.buildSurvey(surveyAddForm.getTitle(), surveyAddForm.getDescription());
+        Integer surveyId = this.buildSurvey(form.getTitle(), form.getDescription());
         // 创建多个Question并批量保存
-        this.buildQuestions(surveyAddForm.getQuestions(), surveyId);
+        this.buildQuestions(form.getQuestions(), surveyId);
         return surveyId;
     }
 
@@ -179,36 +180,55 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     /**
      * 1、问题/选项已存在，进行更新
      * 2、问题/选项不存在，进行插入
-     * @param json 问卷数据
+     * @param form 问卷数据
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateQuestionnaire(JSONObject json) throws CustomException {
-        // 更新问卷实体
-        Integer id = Integer.parseInt(json.getString(Constant.ID));
-        String title = json.getString(Constant.TITLE);
-        String description = json.getString(Constant.DESCRIPTION);
-        updateSurvey(id,title,description);
+    public void update(SurveyUpdateForm form) throws CustomException {
+        // 找不到问卷 || 问卷不处于设计状态
+        Survey survey = this.getById(form.getId());
+        if(survey == null || !Objects.equals(survey.getSurveyState(), Constant.SURVEY_STATE_DESIGN)){
+            throw new CustomException("找不到问卷 || 问卷不处于设计状态");
+        }
+        // 校验需要更新的问题
+        List<Integer> newQuestionIds = form.getQuestions().stream().map(QuestionUpdateForm::getId).collect(Collectors.toList());
+        // 已存在的问题
+        List<Integer> oldQuestionIds = questionService.getQuestionsBySurveyId(form.getId()).stream().map(QuestionVO::getId).collect(Collectors.toList());
 
-        // 更新问题实体和选项实体
-        JSONArray questions = json.getJSONArray(Constant.QUESTIONS);
-        questionService.updateQuestionsAndOptions(questions,id);
-    }
+        // 需要新增的问题 // TODO 需要新增的问题是不会有问题id的
+        List<Integer> needAddQuestionIds = newQuestionIds.stream().filter(id -> !oldQuestionIds.contains(id)).collect(Collectors.toList());
+        // 新增问题
+        for (Integer addQuestionId : needAddQuestionIds) {
+            // 这里应该有逻辑来创建新问题，假设有一个createQuestion的方法
+            // questionService.createQuestion(addQuestionId, form.getId());
+        }
 
+        // 新增选项
 
-    /**
-     * 更新问卷
-     */
-    private void updateSurvey(Integer id, String title, String description) throws CustomException {
-//        Survey survey = this.getSurveyVOById(id);
-//        if(survey == null){
-//            // todo 抛出自定义的异常，事务会回滚吗？
-//            throw new CustomException(Constant.FAIL,"根据问卷id找不到问卷实体");
+        // 需要更新的问题
+        List<Integer> needUpdateQuestionIds = newQuestionIds.stream().filter(id -> oldQuestionIds.contains(id)).collect(Collectors.toList());
+        // 更新问题
+        for (Integer updateQuestionId : needUpdateQuestionIds) {
+            // 这里应该有逻辑来更新问题，假设有一个updateQuestion的方法
+            // questionService.updateQuestion(updateQuestionId);
+        }
+        // 更新选项
+
+        // 需要删除的问题
+        List<Integer> needDeleteQuestionIds = oldQuestionIds.stream().filter(id -> !newQuestionIds.contains(id)).collect(Collectors.toList());
+        // 删除问题
+        for (Integer deleteQuestionId : needDeleteQuestionIds) {
+            // 这里应该有逻辑来删除问题，假设有一个deleteQuestion的方法
+            // questionService.deleteQuestion(deleteQuestionId);
+        }
+        // 删除选项
+
+        // 更新选项
+//        for(QuestionUpdateForm question :  questions){
+//            List<OptionUpdateForm> options = question.getOptions();
 //        }
-//        survey.setTitle(title);
-//        survey.setDescription(description);
-//        this.saveOrUpdate(survey);
     }
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override

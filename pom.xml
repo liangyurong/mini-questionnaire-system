@@ -16,9 +16,9 @@
         <module>qs_user</module>
         <module>qs_analysis</module>
         <module>qs_gateway</module>
-        <module>qs_analysis</module>
         <module>qs_common</module>
         <module>qs_fdfs</module>
+        <module>qs_job</module>
     </modules>
 
     <properties>
@@ -68,6 +68,13 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- 幂等性注解 -->
+            <dependency>
+                <groupId>com.pig4cloud.plugin</groupId>
+                <artifactId>idempotent-spring-boot-starter</artifactId>
+                <version>0.3.0</version>
             </dependency>
 
             <dependency>

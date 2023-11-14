@@ -7,6 +7,7 @@ import com.lyr.qs.dto.SurveyDto;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
 import com.lyr.qs.form.SurveyAddForm;
+import com.lyr.qs.form.SurveyUpdateForm;
 import com.lyr.qs.vo.SurveyVO;
 
 /**
@@ -27,10 +28,10 @@ public interface SurveyService extends IService<Survey> {
 
     /**
      * 创建问卷
-     * @param surveyAddForm
+     * @param form
      * @throws CustomException
      */
-    Integer createQuestionnaire(SurveyAddForm surveyAddForm);
+    Integer createQuestionnaire(SurveyAddForm form);
 
     /**
      * 根据问卷id获取一张问卷内容
@@ -48,9 +49,9 @@ public interface SurveyService extends IService<Survey> {
 
     /**
      * 更新问卷
-     * @param json 问卷数据
+     * @param form 问卷数据
      */
-    void updateQuestionnaire(JSONObject json) throws CustomException;
+    void update(SurveyUpdateForm form) throws CustomException;
 
     /**
      * 根据问卷id删除问卷。只是将问卷的visibility改为0，在物理层面并没有删除

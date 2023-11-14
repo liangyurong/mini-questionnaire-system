@@ -6,6 +6,7 @@ import com.lyr.qs.dto.SurveyDto;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
 import com.lyr.qs.form.SurveyAddForm;
+import com.lyr.qs.form.SurveyUpdateForm;
 import com.lyr.qs.result.R;
 import com.lyr.qs.service.SurveyService;
 import com.lyr.qs.vo.SurveyVO;
@@ -39,16 +40,16 @@ public class SurveyController {
 
     @ApiOperation("创建问卷")
     @PostMapping("/save")
-    public R createQuestionnaire(@RequestBody @Validated SurveyAddForm surveyAddForm ){
-        Integer surveyId = surveyService.createQuestionnaire(surveyAddForm);
+    public R createQuestionnaire(@RequestBody @Validated SurveyAddForm form ){
+        Integer surveyId = surveyService.createQuestionnaire(form);
         return new R(HttpStatus.OK.value(), "创建问卷成功");
     }
 
     // TODO lyr
     @ApiOperation("更新问卷")
-    @PostMapping("/updateQuestionnaire")
-    public R updateQuestionnaire(@RequestBody JSONObject json) throws Exception {
-        surveyService.updateQuestionnaire(json);
+    @PostMapping("/update")
+    public R update(@RequestBody @Validated SurveyUpdateForm form) throws Exception {
+        surveyService.update(form);
         return new R(HttpStatus.OK.value(), "更新问卷成功");
     }
 
