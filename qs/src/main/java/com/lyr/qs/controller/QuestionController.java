@@ -25,7 +25,7 @@ public class QuestionController {
     @ApiOperation("根据问题id删除问题")
     @GetMapping("/delete")
     public R delete(@RequestParam("id")Integer id) {
-        questionService.removeQuestionById(id);
+        questionService.removeQuestionAndOptions(id);
         return new R(HttpStatus.OK.value(), "删除问题成功");
     }
 

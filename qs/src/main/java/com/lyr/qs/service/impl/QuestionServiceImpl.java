@@ -4,17 +4,21 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lyr.qs.entity.Option;
 import com.lyr.qs.entity.Question;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.form.OptionUpdateForm;
+import com.lyr.qs.form.QuestionUpdateForm;
 import com.lyr.qs.mapper.*;
 import com.lyr.qs.service.OptionService;
 import com.lyr.qs.service.QuestionService;
 import com.lyr.qs.vo.QuestionVO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -44,23 +48,50 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
-    public Question createQuestion(JSONObject question, int index, Integer surveyId) {
+    @Transactional(rollbackFor = Exception.class)
+    public Question createQuestion(QuestionUpdateForm questionForm, Integer surveyId) {
+        // 新增问题
+        Question question = new Question();
+        question.setContent(questionForm.getContent());
+        question.setType(questionForm.getType());
+        question.setIsRequired(questionForm.getIsRequired());
+        question.setSurveyId(surveyId);
+        this.save(question);
+        // 插入问题后，处理选项
+        for (OptionUpdateForm optionForm : questionForm.getOptions()) {
+            Option option = new Option();
+            option.setContent(optionForm.getContent());
+            option.setOrderNumber(optionForm.getOrderNumber());
+            option.setQuestionId(question.getId()); // 设置问题ID
+            optionService.save(option);
+        }
+        return question;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Question updateQuestionAndOptions(QuestionUpdateForm questionForm) throws CustomException {
+        Question question = this.getById(questionForm.getId());
+        if (question != null) {
+            question.setContent(questionForm.getContent());
+            this.updateById(question);
+            // 更新问题的选项
+            optionService.updateOptions(question.getId(), questionForm.getOptions());
+        }
         return null;
     }
 
-    @Override
-    public Question updateQuestion(JSONObject question, Integer questionId, int index, Integer surveyId) throws CustomException {
-        return null;
-    }
+
 
     @Override
-    public void updateQuestionsAndOptions(JSONArray questions, Integer surveyId) {
-
-    }
-
-    @Override
-    public void removeQuestionById(Integer id) {
-
+    @Transactional(rollbackFor = Exception.class)
+    public void removeQuestionAndOptions(Integer questionId) {
+        // 删除问题前，先删除关联的选项
+        QueryWrapper<Option> optionQueryWrapper = new QueryWrapper<>();
+        optionQueryWrapper.eq("question_id", questionId);
+        optionService.remove(optionQueryWrapper);
+        // 然后删除问题
+        this.removeById(questionId);
     }
 
 

@@ -1,7 +1,6 @@
 package com.lyr.qs.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -30,7 +29,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 问卷表
@@ -190,43 +188,46 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
         if(survey == null || !Objects.equals(survey.getSurveyState(), Constant.SURVEY_STATE_DESIGN)){
             throw new CustomException("找不到问卷 || 问卷不处于设计状态");
         }
+
+        // 更新问卷信息
+        survey.setTitle(form.getTitle());
+        survey.setDescription(form.getDescription());
+        this.updateById(survey);
+
         // 校验需要更新的问题
         List<Integer> newQuestionIds = form.getQuestions().stream().map(QuestionUpdateForm::getId).collect(Collectors.toList());
         // 已存在的问题
         List<Integer> oldQuestionIds = questionService.getQuestionsBySurveyId(form.getId()).stream().map(QuestionVO::getId).collect(Collectors.toList());
 
-        // 需要新增的问题 // TODO 需要新增的问题是不会有问题id的
-        List<Integer> needAddQuestionIds = newQuestionIds.stream().filter(id -> !oldQuestionIds.contains(id)).collect(Collectors.toList());
+        // 需要新增的问题
+        List<QuestionUpdateForm> needAddQuestions = form.getQuestions().stream()
+                .filter(question -> !oldQuestionIds.contains(question.getId()))
+                .collect(Collectors.toList());
         // 新增问题
-        for (Integer addQuestionId : needAddQuestionIds) {
-            // 这里应该有逻辑来创建新问题，假设有一个createQuestion的方法
-            // questionService.createQuestion(addQuestionId, form.getId());
+        for (QuestionUpdateForm updateForm : needAddQuestions) {
+            // 这里应该有逻辑来创建新问题
+            questionService.createQuestion(updateForm, form.getId());
         }
-
-        // 新增选项
 
         // 需要更新的问题
-        List<Integer> needUpdateQuestionIds = newQuestionIds.stream().filter(id -> oldQuestionIds.contains(id)).collect(Collectors.toList());
-        // 更新问题
-        for (Integer updateQuestionId : needUpdateQuestionIds) {
-            // 这里应该有逻辑来更新问题，假设有一个updateQuestion的方法
-            // questionService.updateQuestion(updateQuestionId);
+        List<QuestionUpdateForm> needUpdateQuestions = form.getQuestions().stream()
+                .filter(question -> oldQuestionIds.contains(question.getId()))
+                .collect(Collectors.toList());
+        // 更新问题和问题的选项
+        for (QuestionUpdateForm updateQuestionForm : needUpdateQuestions) {
+            // 这里应该有逻辑来更新问题
+            questionService.updateQuestionAndOptions(updateQuestionForm);
         }
-        // 更新选项
 
         // 需要删除的问题
-        List<Integer> needDeleteQuestionIds = oldQuestionIds.stream().filter(id -> !newQuestionIds.contains(id)).collect(Collectors.toList());
-        // 删除问题
+        List<Integer> needDeleteQuestionIds = oldQuestionIds.stream()
+                .filter(id -> !newQuestionIds.contains(id))
+                .collect(Collectors.toList());
+        // 删除问题和问题选项
         for (Integer deleteQuestionId : needDeleteQuestionIds) {
-            // 这里应该有逻辑来删除问题，假设有一个deleteQuestion的方法
-            // questionService.deleteQuestion(deleteQuestionId);
+            questionService.removeQuestionAndOptions(deleteQuestionId);
         }
-        // 删除选项
 
-        // 更新选项
-//        for(QuestionUpdateForm question :  questions){
-//            List<OptionUpdateForm> options = question.getOptions();
-//        }
     }
 
 

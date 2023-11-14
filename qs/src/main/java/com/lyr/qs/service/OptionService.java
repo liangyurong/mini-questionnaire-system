@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lyr.qs.entity.Option;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.form.OptionUpdateForm;
 import com.lyr.qs.vo.OptionVO;
 
 import java.util.List;
@@ -31,6 +32,13 @@ public interface OptionService extends IService<Option> {
      * 根据问题id列表删除选项
      */
     void deleteOptionsByQuestionIds(List<Integer> questionIds);
+
+    /**
+     * 更新问题的所有选项
+     * @param questionId
+     * @param options
+     */
+    void updateOptions(Integer questionId, List<OptionUpdateForm> options);
 
     /**
      * 生成所有选项

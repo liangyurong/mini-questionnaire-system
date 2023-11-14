@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lyr.qs.entity.Question;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.form.QuestionUpdateForm;
 import com.lyr.qs.vo.QuestionVO;
 
 import java.util.List;
@@ -33,36 +34,28 @@ public interface QuestionService extends IService<Question> {
     boolean checkQuestionIsEmpty(JSONObject question);
 
     /**
+     * 备注：虽然是更新表单，但这里是新增问题
      * 生成单选题/多选题/单项填空题
-     * @param question 问题
-     * @param index 问题顺序
+     * @param form 问题表单
      * @param surveyId 问卷id
-     * @return 问题实体
+     * @return
      */
-    Question createQuestion(JSONObject question, int index, Integer surveyId);
+    Question createQuestion(QuestionUpdateForm form,Integer surveyId);
+
 
     /**
-     * 更新问题
-     * @param question
-     * @param questionId
-     * @param index
-     * @param surveyId
+     * 更新问题和问题的选项
+     * @param updateQuestionForm
      * @return
      * @throws CustomException
      */
-    Question updateQuestion(JSONObject question,Integer questionId, int index, Integer surveyId) throws CustomException;
+    Question updateQuestionAndOptions(QuestionUpdateForm updateQuestionForm) throws CustomException;
 
     /**
-     * 更新问题实体和选项实体
-     * @param questions
+     * 根据问题id删除问题和问题的全部选项
+     * @param questionId 问题id
      */
-    void updateQuestionsAndOptions(JSONArray questions,Integer surveyId) throws CustomException;
-
-    /**
-     * 根据问题id删除问题
-     * @param id 问题id
-     */
-    void removeQuestionById(Integer id);
+    void removeQuestionAndOptions(Integer questionId);
 
     /**
      * 根据问卷id获取所有问题
