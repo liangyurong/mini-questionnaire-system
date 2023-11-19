@@ -13,7 +13,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class OptionUpdateForm {
 
-    @NotNull(message = "选项id 不能为空")
+    // 新增的选项，id是空的
+    // 需要更新的选项才有id
     @Schema(description = "选项id")
     private Integer id;
 

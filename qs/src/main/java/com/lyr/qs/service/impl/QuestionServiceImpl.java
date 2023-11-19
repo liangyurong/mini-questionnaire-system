@@ -1,12 +1,14 @@
 package com.lyr.qs.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lyr.qs.constant.Constant;
 import com.lyr.qs.entity.Option;
 import com.lyr.qs.entity.Question;
 import com.lyr.qs.exception.CustomException;
@@ -57,13 +59,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         question.setIsRequired(questionForm.getIsRequired());
         question.setSurveyId(surveyId);
         this.save(question);
-        // 插入问题后，处理选项
-        for (OptionUpdateForm optionForm : questionForm.getOptions()) {
-            Option option = new Option();
-            option.setContent(optionForm.getContent());
-            option.setOrderNumber(optionForm.getOrderNumber());
-            option.setQuestionId(question.getId()); // 设置问题ID
-            optionService.save(option);
+        // 不是单项填空题，则处理选项
+        if(!questionForm.getType().equals(Constant.QUESTION_TYPE_SINGLE_FILL)){
+            for (OptionUpdateForm optionForm : questionForm.getOptions()) {
+                Option option = new Option();
+                option.setContent(optionForm.getContent());
+                option.setOrderNumber(optionForm.getOrderNumber());
+                option.setQuestionId(question.getId()); // 设置问题ID
+                optionService.save(option);
+            }
         }
         return question;
     }
@@ -75,25 +79,22 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         if (question != null) {
             question.setContent(questionForm.getContent());
             this.updateById(question);
-            // 更新问题的选项
-            optionService.updateOptions(question.getId(), questionForm.getOptions());
+            // 不是单项填空题，则处理选项
+            if(!questionForm.getType().equals(Constant.QUESTION_TYPE_SINGLE_FILL)){
+                optionService.updateOptions(question.getId(), questionForm.getOptions());
+            }
         }
         return null;
     }
-
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeQuestionAndOptions(Integer questionId) {
         // 删除问题前，先删除关联的选项
-        QueryWrapper<Option> optionQueryWrapper = new QueryWrapper<>();
-        optionQueryWrapper.eq("question_id", questionId);
-        optionService.remove(optionQueryWrapper);
+        optionService.deleteOptionsByQuestionId(questionId);
         // 然后删除问题
         this.removeById(questionId);
     }
-
 
     @Override
     public List<QuestionVO> getQuestionsBySurveyId(Integer surveyId) {

@@ -1,6 +1,7 @@
 package com.lyr.qs.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -37,7 +38,6 @@ import java.util.stream.Collectors;
  * @since 2022-12-30
  */
 @Service
-@AllArgsConstructor
 @Slf4j
 public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> implements SurveyService {
 
@@ -194,18 +194,15 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
         survey.setDescription(form.getDescription());
         this.updateById(survey);
 
-        // 校验需要更新的问题
-        List<Integer> newQuestionIds = form.getQuestions().stream().map(QuestionUpdateForm::getId).collect(Collectors.toList());
         // 已存在的问题
         List<Integer> oldQuestionIds = questionService.getQuestionsBySurveyId(form.getId()).stream().map(QuestionVO::getId).collect(Collectors.toList());
 
-        // 需要新增的问题
+        // 需要新增的问题（没有id的就是新增）
         List<QuestionUpdateForm> needAddQuestions = form.getQuestions().stream()
-                .filter(question -> !oldQuestionIds.contains(question.getId()))
+                .filter(question -> ObjectUtil.isNull(question.getId()))
                 .collect(Collectors.toList());
         // 新增问题
         for (QuestionUpdateForm updateForm : needAddQuestions) {
-            // 这里应该有逻辑来创建新问题
             questionService.createQuestion(updateForm, form.getId());
         }
 
@@ -219,9 +216,11 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
             questionService.updateQuestionAndOptions(updateQuestionForm);
         }
 
+        // 需要更新的问题id
+        List<Integer> needUpdateIds = needUpdateQuestions.stream().map(QuestionUpdateForm::getId).collect(Collectors.toList());
         // 需要删除的问题
         List<Integer> needDeleteQuestionIds = oldQuestionIds.stream()
-                .filter(id -> !newQuestionIds.contains(id))
+                .filter(id -> !needUpdateIds.contains(id))
                 .collect(Collectors.toList());
         // 删除问题和问题选项
         for (Integer deleteQuestionId : needDeleteQuestionIds) {
@@ -267,8 +266,7 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
 
     @Override
     public void fillQuestionnaire(JSONObject json) throws CustomException{
-        checkFillSurveyDataIsEmpty(json);
-        Integer id = Integer.parseInt(json.getString(Constant.ID));
+
 
     }
 

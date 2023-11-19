@@ -45,9 +45,8 @@ public class SurveyController {
         return new R(HttpStatus.OK.value(), "创建问卷成功");
     }
 
-    // TODO lyr
     @ApiOperation("更新问卷")
-    @PostMapping("/update")
+    @PostMapping
     public R update(@RequestBody @Validated SurveyUpdateForm form) throws Exception {
         surveyService.update(form);
         return new R(HttpStatus.OK.value(), "更新问卷成功");

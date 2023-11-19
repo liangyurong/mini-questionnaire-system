@@ -16,7 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 public class QuestionUpdateForm {
 
-    @NotNull(message = "问题id 不能为空")
+    // 新增的问题，id是空的
+    // 需要更新的问题才有id
     @Schema(description = "问题id")
     private Integer id;
 
