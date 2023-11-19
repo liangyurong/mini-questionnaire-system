@@ -39,7 +39,7 @@ public class SurveyController {
     }
 
     @ApiOperation("创建问卷")
-    @PostMapping("/save")
+    @PostMapping
     public R createQuestionnaire(@RequestBody @Validated SurveyAddForm form ){
         Integer surveyId = surveyService.createQuestionnaire(form);
         return new R(HttpStatus.OK.value(), "创建问卷成功");
@@ -53,7 +53,7 @@ public class SurveyController {
     }
 
     @ApiOperation("根据问卷id删除问卷")
-    @GetMapping("/remove/{id}")
+    @PutMapping("/{id}")
     public R remove(@PathVariable("id") Integer id) {
         surveyService.remove(id);
         return new R(HttpStatus.OK.value(), "删除问卷成功");
@@ -86,7 +86,6 @@ public class SurveyController {
 //    public ResponseResult getSurveyAnswer(@PathVariable("surveyId") String surveyId,@PathVariable("phone") String phone ) {
 //        return surveyService.getSurveyAnswer(surveyId,phone);
 //    }
-
 
 
 //    @ApiOperation("根据问卷id和日期获取问卷数据和全部答案的数据")
