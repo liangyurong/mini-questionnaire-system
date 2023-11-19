@@ -39,14 +39,14 @@ public class SurveyController {
     }
 
     @ApiOperation("创建问卷")
-    @PostMapping
+    @PostMapping("/save")
     public R createQuestionnaire(@RequestBody @Validated SurveyAddForm form ){
         Integer surveyId = surveyService.createQuestionnaire(form);
         return new R(HttpStatus.OK.value(), "创建问卷成功");
     }
 
     @ApiOperation("更新问卷")
-    @PostMapping
+    @PostMapping("/update")
     public R update(@RequestBody @Validated SurveyUpdateForm form) throws Exception {
         surveyService.update(form);
         return new R(HttpStatus.OK.value(), "更新问卷成功");
