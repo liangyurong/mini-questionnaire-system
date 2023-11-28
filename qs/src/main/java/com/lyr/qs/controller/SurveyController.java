@@ -34,7 +34,7 @@ public class SurveyController {
 
     @ApiOperation("根据问卷id获取一份问卷数据")
     @GetMapping("/{id}")
-    public R<SurveyVO> getById(@PathVariable("id") Integer id) throws CustomException {
+    public R<SurveyVO> getById(@PathVariable("id") Integer id) {
         SurveyVO surveyVO = surveyService.getSurveyVOById(id);
         return new R<>(HttpStatus.OK.value(), "获取问卷列表成功", surveyVO);
     }
