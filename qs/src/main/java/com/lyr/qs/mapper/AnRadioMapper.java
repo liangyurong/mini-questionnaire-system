@@ -1,7 +1,7 @@
 package com.lyr.qs.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.lyr.qs.entity.AnRadio;
+import com.lyr.qs.entity.AnQuestion;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2022-12-30
  */
 @Mapper
-public interface AnRadioMapper extends BaseMapper<AnRadio> {
+public interface AnRadioMapper extends BaseMapper<AnQuestion> {
 
 }

@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnswerSurvey implements Serializable {
+public class AnSurvey implements Serializable {
 
     private static final long serialVersionUID=1L;
 

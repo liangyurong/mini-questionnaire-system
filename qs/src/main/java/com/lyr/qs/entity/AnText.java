@@ -27,10 +27,10 @@ public class AnText implements Serializable {
     private Integer id;
 
     @Schema(description = "问卷id")
-    private Integer belongSurveyId;
+    private Integer surveyId;
 
     @Schema(description = "问题id")
-    private Integer belongQuestionId;
+    private Integer questionId;
 
     @Schema(description = "答案")
     private String myText;

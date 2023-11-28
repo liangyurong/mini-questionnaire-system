@@ -1,30 +1,26 @@
 package com.lyr.qs.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lyr.qs.constant.Constant;
 import com.lyr.qs.dto.SurveyDto;
-import com.lyr.qs.entity.Option;
-import com.lyr.qs.entity.Question;
-import com.lyr.qs.entity.Survey;
+import com.lyr.qs.entity.*;
 import com.lyr.qs.exception.CustomException;
 import com.lyr.qs.form.*;
 import com.lyr.qs.mapper.SurveyMapper;
-import com.lyr.qs.service.OptionService;
-import com.lyr.qs.service.QuestionService;
-import com.lyr.qs.service.SurveyService;
+import com.lyr.qs.service.*;
 import com.lyr.qs.vo.QuestionVO;
 import com.lyr.qs.vo.SurveyVO;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -45,6 +41,12 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     private QuestionService questionService;
     @Resource
     private OptionService optionService;
+    @Resource
+    private AnSurveyService anSurveyService;
+    @Resource
+    private AnQuestionService anQuestionService;
+    @Resource
+    private AnTextService anTextService;
 
     // todo 首先从redis中获取
     @Override
@@ -264,15 +266,69 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
 //        this.updateById(survey);
     }
 
+
     @Override
-    public void fillQuestionnaire(FillSurveyForm form) throws CustomException{
-
-
+    @Transactional(rollbackFor = Exception.class)
+    public void fillQuestionnaire(FillSurveyForm surveyForm){
+        // 问卷id
+        Integer surveyId = surveyForm.getSurveyId();
+        // 保存问卷信息
+        this.saveAnSurvey(surveyForm);
+        // 保存问题列表信息
+        if (CollectionUtil.isNotEmpty(surveyForm.getQuestions())) {
+            List<FillQuestionForm> questions = surveyForm.getQuestions();
+            for (FillQuestionForm question : questions) {
+                this.saveAnQuestionInfo(surveyId, question);
+            }
+        }
     }
 
-    @Override
-    public void checkFillSurveyDataIsEmpty(JSONObject json) throws CustomException {
+    // 保存问卷信息的方法
+    private void saveAnSurvey(FillSurveyForm surveyForm) {
+        AnSurvey anSurvey = new AnSurvey();
+        anSurvey.setUserId(surveyForm.getUserId());
+        anSurvey.setName(surveyForm.getName());
+        anSurvey.setPhone(surveyForm.getPhone());
+        anSurvey.setSurveyId(surveyForm.getSurveyId());
+        anSurvey.setVisibility(Constant.SURVEY_VISIBILITY_ABLE);
+        anSurvey.setCreateTime(LocalDateTime.now());
+        anSurveyService.save(anSurvey);
+    }
 
+    // 保存问题信息的方法
+    private void saveAnQuestionInfo(Integer surveyId, FillQuestionForm question) {
+        String questionType = question.getType();
+        switch (questionType) {
+            case Constant.QUESTION_TYPE_SINGLE_OPTION:
+            case Constant.QUESTION_TYPE_MULTIPLE_OPTION:
+                this.saveAnQuestion(surveyId, question);
+                break;
+            case Constant.QUESTION_TYPE_SINGLE_FILL:
+                this.saveAnText(surveyId, question);
+                break;
+            // 可能有其他类型的问题，可以在这里进行扩展
+            default:
+                break;
+        }
+    }
+
+    // 保存选项问题
+    private void saveAnQuestion(Integer surveyId, FillQuestionForm question) {
+        AnQuestion anQuestion = new AnQuestion();
+        anQuestion.setSurveyId(surveyId);
+        anQuestion.setQuestionId(question.getQuestionId());
+        anQuestion.setType(question.getType());
+        anQuestion.setOptionIds(question.getOptionIds());
+        anQuestionService.save(anQuestion);
+    }
+
+    // 保存填空问题
+    private void saveAnText(Integer surveyId, FillQuestionForm question) {
+        AnText anText = new AnText();
+        anText.setSurveyId(surveyId);
+        anText.setQuestionId(question.getQuestionId());
+        anText.setMyText(question.getMyText());
+        anTextService.save(anText);
     }
 
 }

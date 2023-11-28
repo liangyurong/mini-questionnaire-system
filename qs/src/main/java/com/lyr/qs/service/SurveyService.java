@@ -68,15 +68,8 @@ public interface SurveyService extends IService<Survey> {
 
     /**
      * 填写问卷
-     * @param json
+     * @param fillSurveyForm
      */
-    void fillQuestionnaire(FillSurveyForm form) throws CustomException;
+    void fillQuestionnaire(FillSurveyForm fillSurveyForm) throws CustomException;
 
-
-    /**
-     * 检查填写数据是否符合规则
-     *
-     * @param json
-     */
-    void checkFillSurveyDataIsEmpty(JSONObject json) throws CustomException;
 }

@@ -68,11 +68,11 @@ public class SurveyController {
         return new R(HttpStatus.OK.value(), "更新问卷状态成功");
     }
 
-    // TODO lyr
+    // 一经填写提交则不允许修改问卷
     @ApiOperation("填写问卷，并将填写的答卷数据存储到数据库")
     @PostMapping("/fillQuestionnaire")
-    public R fillQuestionnaire(@RequestBody @Validated FillSurveyForm form) throws CustomException {
-        surveyService.fillQuestionnaire(form);
+    public R fillQuestionnaire(@RequestBody @Validated FillSurveyForm fillSurveyForm) throws CustomException {
+        surveyService.fillQuestionnaire(fillSurveyForm);
         return new R(HttpStatus.OK.value(), "填写问卷成功");
     }
 

@@ -1,7 +1,7 @@
 package com.lyr.qs.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.lyr.qs.entity.AnswerSurvey;
+import com.lyr.qs.entity.AnSurvey;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2022-12-30
  */
 @Mapper
-public interface AnswerSurveyMapper extends BaseMapper<AnswerSurvey> {
+public interface AnswerSurveyMapper extends BaseMapper<AnSurvey> {
 
 }

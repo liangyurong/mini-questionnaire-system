@@ -23,8 +23,12 @@ public class FillSurveyForm {
     @NotBlank(message = "姓名 不能为空")
     private String name;
 
+    @Schema(description = "手机号")
+    @NotBlank(message = "手机号 不能为空")
+    private String phone;
+
     @Schema(description = "问题列表")
-    @NotEmpty(message = "问题列表不能为空")
+    @NotEmpty(message = "问题列表   不能为空")
     private List<FillQuestionForm> questions;
     
 

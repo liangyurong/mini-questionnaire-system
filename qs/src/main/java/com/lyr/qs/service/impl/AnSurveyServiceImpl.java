@@ -1,9 +1,9 @@
 package com.lyr.qs.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.lyr.qs.entity.AnswerSurvey;
+import com.lyr.qs.entity.AnSurvey;
 import com.lyr.qs.mapper.AnswerSurveyMapper;
-import com.lyr.qs.service.AnswerSurveyService;
+import com.lyr.qs.service.AnSurveyService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,6 +13,6 @@ import org.springframework.stereotype.Service;
  * @since 2022-12-30
  */
 @Service
-public class AnswerSurveyServiceImpl extends ServiceImpl<AnswerSurveyMapper, AnswerSurvey> implements AnswerSurveyService {
+public class AnSurveyServiceImpl extends ServiceImpl<AnswerSurveyMapper, AnSurvey> implements AnSurveyService {
 
 }

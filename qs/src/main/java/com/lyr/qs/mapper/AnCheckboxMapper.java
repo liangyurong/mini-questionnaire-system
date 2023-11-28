@@ -1,7 +1,6 @@
 package com.lyr.qs.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.lyr.qs.entity.AnCheckbox;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
