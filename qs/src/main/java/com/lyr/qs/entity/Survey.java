@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,6 +20,7 @@ import java.util.List;
  * @author yurong333
  * @since 2022-12-30
  */
+@Schema(description = "问卷表")
 @TableName("t_survey")
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -29,47 +31,32 @@ public class Survey implements Serializable {
 
     private static final long serialVersionUID=1L;
 
-    /**
-     * 主键
-     */
     @TableId(value = "id", type = IdType.AUTO)
+    @Schema(description = "问卷表主键")
     private Integer id;
 
-    /**
-     * 问卷名称
-     */
+    @Schema(description = "问卷名称")
     private String title;
 
-    /**
-     * 问卷描述
-     */
+    @Schema(description = "问卷描述")
     private String description;
 
-    /**
-     * 创建时间
-     */
+    @Schema(description = "创建时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTime;
 
-    /**
-     * 问卷状态  0 默认设计状态  1发布 2结束
-     */
+    @Schema(description = "问卷状态  0 默认设计状态  1发布 2结束")
     private Integer surveyState;
 
-    /**
-     * 问卷的题目数
-     */
+    @Schema(description = "问卷的题目数")
     private Integer surveyQuestionNum;
 
-    /**
-     * 回答次数
-     */
+
+    @Schema(description = "回答次数")
     private Integer answerNum;
 
-    /**
-     * 是否显示  0显示  1不显示 。主要用于问卷删除
-     */
+    @Schema(description = "是否显示  0显示  1不显示 。主要用于问卷删除")
     private Integer visibility;
 
 

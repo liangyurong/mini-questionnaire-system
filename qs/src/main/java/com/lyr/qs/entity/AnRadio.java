@@ -1,6 +1,7 @@
 package com.lyr.qs.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.io.Serializable;
@@ -17,33 +18,24 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "单选题答题表")
 public class AnRadio implements Serializable {
 
     private static final long serialVersionUID=1L;
 
-    /**
-     * 单选题答题表主键
-     */
+    @Schema(description = "单选题答题表主键")
     private Integer id;
 
-    /**
-     * 问卷表的主键
-     */
+    @Schema(description = "问卷表的主键")
     private Integer belongSurveyId;
 
-    /**
-     * 问题表主键
-     */
+    @Schema(description = "问题表主键")
     private Integer belongQuestionId;
 
-    /**
-     * 被选中的选项id
-     */
+    @Schema(description = "被选中的选项id")
     private Integer optionId;
 
-    /**
-     * 被选中的选项的排序id，从0开始
-     */
+    @Schema(description = "被选中的选项的排序id，从0开始")
     private Integer orderId;
 
 

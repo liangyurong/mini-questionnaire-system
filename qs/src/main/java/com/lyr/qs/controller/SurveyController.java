@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyr.qs.dto.SurveyDto;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.form.FillSurveyForm;
 import com.lyr.qs.form.SurveyAddForm;
 import com.lyr.qs.form.SurveyUpdateForm;
 import com.lyr.qs.result.R;
@@ -70,8 +71,8 @@ public class SurveyController {
     // TODO lyr
     @ApiOperation("填写问卷，并将填写的答卷数据存储到数据库")
     @PostMapping("/fillQuestionnaire")
-    public R fillQuestionnaire(@RequestBody JSONObject json) throws CustomException {
-        surveyService.fillQuestionnaire(json);
+    public R fillQuestionnaire(@RequestBody @Validated FillSurveyForm form) throws CustomException {
+        surveyService.fillQuestionnaire(form);
         return new R(HttpStatus.OK.value(), "填写问卷成功");
     }
 

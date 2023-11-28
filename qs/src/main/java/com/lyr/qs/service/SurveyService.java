@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lyr.qs.dto.SurveyDto;
 import com.lyr.qs.entity.Survey;
 import com.lyr.qs.exception.CustomException;
+import com.lyr.qs.form.FillSurveyForm;
 import com.lyr.qs.form.SurveyAddForm;
 import com.lyr.qs.form.SurveyUpdateForm;
 import com.lyr.qs.vo.SurveyVO;
@@ -69,7 +70,7 @@ public interface SurveyService extends IService<Survey> {
      * 填写问卷
      * @param json
      */
-    void fillQuestionnaire(JSONObject json) throws CustomException;
+    void fillQuestionnaire(FillSurveyForm form) throws CustomException;
 
 
     /**

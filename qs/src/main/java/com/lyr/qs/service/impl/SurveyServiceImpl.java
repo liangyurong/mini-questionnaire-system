@@ -265,7 +265,7 @@ public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> impleme
     }
 
     @Override
-    public void fillQuestionnaire(JSONObject json) throws CustomException{
+    public void fillQuestionnaire(FillSurveyForm form) throws CustomException{
 
 
     }
